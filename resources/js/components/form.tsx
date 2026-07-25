@@ -17,6 +17,7 @@ export function Form({ children, ...props }: Props) {
   return (
     <InertiaForm {...props}>
       {({ errors, processing }) => {
+        console.log({ errors })
         return (
           <FormContext value={{ errors, fetching: processing }}>
             {children}

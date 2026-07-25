@@ -150,6 +150,8 @@ Route::group([
     Route::resource('transactions', \App\Http\Cms\TransactionController::class)->only(['index', 'destroy']);
     Route::get('transactions/report', [\App\Http\Cms\TransactionController::class, 'report'])->name('transactions.report');
     Route::resource('settings', \App\Http\Cms\SettingsController::class)->only(['index', 'store']);
+    Route::get('mentoring/availabilities', [\App\Http\Cms\MentoringAvailabilityController::class, 'index'])->name('mentoring.availabilities.index');
+    Route::put('mentoring/availabilities', [\App\Http\Cms\MentoringAvailabilityController::class, 'update'])->name('mentoring.availabilities.update');
     Route::delete('jobs/{job}', [\App\Http\Cms\JobController::class, 'destroy'])->name('jobs.destroy');
     Route::delete('failed-jobs/{job}', [\App\Http\Cms\JobController::class, 'destroyFailed'])->name('failed-jobs.destroy');
     Route::post('failed-jobs/{job}/retry', [\App\Http\Cms\JobController::class, 'retryFailed'])->name('failed-jobs.retry');

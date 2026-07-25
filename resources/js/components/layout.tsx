@@ -12,6 +12,7 @@ import {
   LifeBuoyIcon,
   ListVideoIcon,
   MailIcon,
+  CalendarClockIcon,
   MessagesSquareIcon,
   MonitorPlayIcon,
   SearchIcon,
@@ -72,6 +73,7 @@ import LogController from "@/actions/App/Http/Cms/LogController.ts"
 import SponsorController from "@/actions/App/Http/Cms/SponsorController.ts"
 import { trimCharacter } from "@/lib/string.ts"
 import ContactRequestController from "@/actions/App/Http/Cms/ContactRequestController.ts"
+import MentoringAvailabilityController from "@/actions/App/Http/Cms/MentoringAvailabilityController.ts"
 
 type Props = {
   breadcrumb: NavItem[]
@@ -193,6 +195,16 @@ const nav = [
         label: "Contact",
         icon: MailIcon,
         href: ContactRequestController.index(),
+      },
+    ],
+  },
+  {
+    label: "Mentoring",
+    children: [
+      {
+        label: "Disponibilités",
+        icon: CalendarClockIcon,
+        href: MentoringAvailabilityController.index(),
       },
     ],
   },

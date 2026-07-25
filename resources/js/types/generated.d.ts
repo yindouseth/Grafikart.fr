@@ -199,6 +199,11 @@ message: string;
 exception: string | null;
 date: string;
 };
+export type MentoringAvailabilityData = {
+weekday: number;
+startsAtMinute: number;
+endsAtMinute: number;
+};
 export type MonthlyData = {
 month: number;
 year: number;
