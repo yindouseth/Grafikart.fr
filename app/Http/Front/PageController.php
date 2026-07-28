@@ -30,6 +30,11 @@ class PageController extends Controller
         return view('pages.about');
     }
 
+    public function mentoring(): View
+    {
+        return view('pages.mentoring');
+    }
+
     public function premium(): View
     {
         return view('pages.premium', [
