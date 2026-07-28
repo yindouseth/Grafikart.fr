@@ -123,14 +123,14 @@ attachment: AttachmentUrlData | null;
 youtubeThumbnail: AttachmentUrlData | null;
 formationId: number | null;
 questionsCount: number;
-technologies: Array<TechnologyUsageData> | Array<any> | null;
+technologies: Array<TechnologyUsageData> | null;
 };
 export type CourseRowData = {
 id: number;
 title: string;
 online: boolean;
 createdAt: string;
-technologies: Array<TechnologyUsageData> | Array<any>;
+technologies: Array<TechnologyUsageData>;
 };
 export type CourseViewData = {
 type: string;
@@ -175,14 +175,14 @@ attachment: AttachmentUrlData | null;
 youtubePlaylist: string | null;
 links: string | null;
 chapters: Array<ChapterData>;
-technologies: Array<TechnologyUsageData> | Array<any> | null;
+technologies: Array<TechnologyUsageData> | null;
 };
 export type FormationRowData = {
 id: number;
 title: string;
 online: boolean;
 createdAt: string;
-technologies: Array<TechnologyUsageData> | Array<any>;
+technologies: Array<TechnologyUsageData>;
 };
 export type FormationViewData = {
 type: string;
@@ -200,6 +200,10 @@ exception: string | null;
 date: string;
 };
 export type MentoringAvailabilityData = {
+date: string;
+startTimes: Array<any>;
+};
+export type MentoringAvailabilityTimeData = {
 weekday: number;
 startsAtMinute: number;
 endsAtMinute: number;
@@ -410,7 +414,7 @@ slug: string;
 content: string;
 deprecatedBy: OptionItemData | null;
 image: string | null;
-requirements: Array<OptionItemData> | Array<any> | null;
+requirements: Array<OptionItemData> | null;
 };
 export type TechnologyRowData = {
 id: number;

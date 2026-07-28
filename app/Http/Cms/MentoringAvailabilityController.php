@@ -4,7 +4,7 @@ namespace App\Http\Cms;
 
 use App\Domains\Mentoring\MentoringAvailability;
 use App\Domains\Mentoring\MentoringException;
-use App\Http\Cms\Data\Mentoring\MentoringAvailabilityData;
+use App\Http\Cms\Data\Mentoring\MentoringAvailabilityTimeData;
 use App\Http\Cms\Data\Mentoring\MentoringAvailabilityUpdateData;
 use App\Http\Cms\Data\Mentoring\MentoringExceptionAvailabilityData;
 use App\Http\Cms\Data\Mentoring\MentoringExceptionData;
@@ -22,7 +22,7 @@ final class MentoringAvailabilityController
                 ->orderBy('weekday')
                 ->orderBy('starts_at_minute')
                 ->get()
-                ->map(fn (MentoringAvailability $availability) => MentoringAvailabilityData::fromModel($availability))
+                ->map(fn (MentoringAvailability $availability) => MentoringAvailabilityTimeData::fromModel($availability))
                 ->values(),
             'exceptions' => MentoringException::query()
                 ->orderBy('date')
@@ -49,7 +49,7 @@ final class MentoringAvailabilityController
         DB::transaction(function () use ($data): void {
             MentoringAvailability::query()->truncate();
             MentoringAvailability::query()->insert(
-                $data->availabilities->map(fn (MentoringAvailabilityData $availability) => $availability->toDatabaseAttributes())->all(),
+                $data->availabilities->map(fn (MentoringAvailabilityTimeData $availability) => $availability->toDatabaseAttributes())->all(),
             );
         });
 

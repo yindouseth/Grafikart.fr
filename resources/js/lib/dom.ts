@@ -69,10 +69,18 @@ export function onAll<T extends Element>(
   eventName: Parameters<T["addEventListener"]>[0],
   callback: (e: Event & { currentTarget: T }) => void,
 ) {
+  const reset = [] as (() => void)[]
   base.querySelectorAll<T>(selector).forEach((el) => {
     // @ts-expect-error callback is typed with a stronger specification on currentTarget
     el.addEventListener(eventName, callback)
+    reset.push(() => {
+      // @ts-expect-error callback is typed with a stronger specification on currentTarget
+      el.removeEventListener(eventName, callback)
+    })
   })
+  return () => {
+    reset.forEach((r) => r())
+  }
 }
 
 /**

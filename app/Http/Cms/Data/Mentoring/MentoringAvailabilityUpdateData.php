@@ -9,10 +9,10 @@ use Spatie\LaravelData\Data;
 final class MentoringAvailabilityUpdateData extends Data
 {
     /**
-     * @param  Collection<int, MentoringAvailabilityData>  $availabilities
+     * @param  Collection<int, MentoringAvailabilityTimeData>  $availabilities
      */
     public function __construct(
-        #[DataCollectionOf(MentoringAvailabilityData::class)]
+        #[DataCollectionOf(MentoringAvailabilityTimeData::class)]
         public Collection $availabilities = new Collection,
     ) {}
 

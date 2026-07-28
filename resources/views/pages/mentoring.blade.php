@@ -13,7 +13,7 @@
                 Une séance en visioconférence pour avancer concrètement sur votre apprentissage,
                 un projet personnel ou professionnel.
             </p>
-            <x-atoms.button size="lg" type="button" data-mentoring-booking-trigger>
+            <x-atoms.button size="lg" type="button" class="js-mentoring">
                 <x-lucide-calendar/>
                 Réserver une séance
             </x-atoms.button>
@@ -98,9 +98,11 @@
         </h2>
         <p class="text-xl text-muted mt-4 max-w-150 mx-auto">Réservez une heure pour faire le point et trouver la
             meilleure suite à donner.</p>
-        <x-atoms.button size="lg" type="button" class="mt-7 mx-auto" data-mentoring-booking-trigger>
+        <x-atoms.button size="lg" type="button" class="mt-7 mx-auto js-mentoring">
             <x-lucide-calendar/>
             Voir les disponibilités
         </x-atoms.button>
     </section>
+
+    <mentoring-dialog></mentoring-dialog>
 @endsection

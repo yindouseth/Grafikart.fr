@@ -13,7 +13,7 @@ use Spatie\LaravelData\Data;
 use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 #[TypeScript]
-final class MentoringAvailabilityData extends Data
+final class MentoringAvailabilityTimeData extends Data
 {
     public function __construct(
         #[Required, IntegerType, Between(min: 1, max: 7)]

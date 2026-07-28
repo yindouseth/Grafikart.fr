@@ -4,7 +4,7 @@ Liste de travail issue des ADR du domaine. Les cases cochées correspondent aux 
 
 ## 1. Consolider le modèle métier
 
-- [x] Créer les modèles initiaux `MentoringAvailabilityData`, `MentoringException` et `MentoringBooking`, ainsi que les tables associées.
+- [x] Créer les modèles initiaux `MentoringAvailabilityTimeData`, `MentoringException` et `MentoringBooking`, ainsi que les tables associées.
 - [x] Ajouter une relation polymorphe nullable `transactions.transactionable`, compatible avec les transactions Premium existantes.
 - [ ] Compléter la migration `mentoring_bookings` : instantanés de prix (6 000 centimes TTC) et durée (60 minutes), fuseau du participant, identifiant Checkout Stripe, secret de salle kMeet, UID et séquence iCalendar, dates métier et métadonnées nécessaires.
 - [ ] Ajouter `mentoring_booking_schedule_histories` avec ancien/nouveau créneau, auteur, cause et date du changement.
