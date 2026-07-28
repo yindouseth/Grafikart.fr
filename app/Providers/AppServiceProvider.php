@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Domains\Blog\Post;
 use App\Domains\Course\Course;
 use App\Domains\Course\Formation;
+use App\Domains\Mentoring\MentoringBooking;
 use App\Http\Front\AuthController;
 use App\Infrastructure\Twitch\TwitchAPI;
 use App\Models\User;
@@ -95,6 +96,7 @@ class AppServiceProvider extends ServiceProvider
             'post' => Post::class,
             'formation' => Formation::class,
             'course' => Course::class,
+            'mentoring' => MentoringBooking::class,
             // Fake morph type for the paths
             'gate' => Course::class,
             'fork' => Course::class,
