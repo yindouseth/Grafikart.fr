@@ -1,16 +1,27 @@
-import { CalendarDaysIcon, PlusIcon, SaveIcon, XIcon } from "lucide-react"
+import {
+  CalendarDaysIcon,
+  PlusIcon,
+  SaveIcon,
+  TrashIcon,
+  XIcon,
+} from "lucide-react"
 import { useMemo, useState } from "react"
 import MentoringAvailabilityController from "@/actions/App/Http/Cms/MentoringAvailabilityController.ts"
+import MentoringExceptionController from "@/actions/App/Http/Cms/MentoringExceptionController.ts"
 import { Form, useFormError } from "@/components/form.tsx"
 import { withLayout } from "@/components/layout.tsx"
 import { PageTitle } from "@/components/page-title.tsx"
-import { Button } from "@/components/ui/button.tsx"
-import { Input } from "@/components/ui/input.tsx"
-import type { MentoringAvailabilityData } from "@/types"
 import { Badge } from "@/components/ui/badge.tsx"
+import { Button } from "@/components/ui/button.tsx"
+import { ButtonLink } from "@/components/ui/button-link.tsx"
+import { Input } from "@/components/ui/input.tsx"
+import { ExceptionDialog } from "@/pages/mentoring/availabilities/exception-dialog.tsx"
+import type { MentoringAvailabilityData, MentoringExceptionData } from "@/types"
+import { cn } from "@/lib/utils.ts"
 
 type Props = {
   availabilities: MentoringAvailabilityData[]
+  exceptions: MentoringExceptionData[]
 }
 
 type Availability = MentoringAvailabilityData & { id: string }
@@ -29,7 +40,7 @@ const toTime = (minutes: number) =>
   `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`
 
 export default withLayout<Props>(
-  ({ availabilities }) => {
+  ({ availabilities, exceptions }) => {
     const [ranges, setRanges] = useState<Availability[]>(() =>
       availabilities.map((availability, index) => ({
         ...availability,
@@ -54,9 +65,9 @@ export default withLayout<Props>(
     }
 
     return (
-      <div className="max-w-2xl">
+      <div className="max-w-2xl space-y-8">
         <PageTitle>Disponibilités mentoring</PageTitle>{" "}
-        <h1 className="flex items-center gap-2 font-semibold text-xl mb-2">
+        <h1 className="flex items-center gap-2 font-semibold text-xl mb-4">
           <CalendarDaysIcon className="text-primary" />
           Disponibilités
         </h1>
@@ -77,10 +88,10 @@ export default withLayout<Props>(
                   {dayRanges.length === 0 && (
                     <p className="py-2 text-muted-foreground">Indisponible</p>
                   )}
-                  {dayRanges.map((range, rangeIndex) => (
+                  {dayRanges.map((range) => (
                     <AvailabilityRangeRow
                       day={day}
-                      key={rangeIndex}
+                      key={range.id}
                       onRemove={() =>
                         setRanges((current) =>
                           current.filter(({ id }) => id !== range.id),
@@ -103,6 +114,27 @@ export default withLayout<Props>(
             )
           })}
         </Form>
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold text-lg">Heures spécifiques</h2>
+              <p className="text-muted-foreground text-sm">
+                Ajustez les disponibilités pour des dates précises.
+              </p>
+            </div>
+            <ExceptionDialog />
+          </div>
+          <div className="space-y-2">
+            {exceptions.length === 0 && (
+              <p className="text-muted-foreground text-sm">
+                Aucune disponibilité spécifique.
+              </p>
+            )}
+            {exceptions.map((exception) => (
+              <ExceptionRow exception={exception} key={exception.date} />
+            ))}
+          </div>
+        </section>
       </div>
     )
   },
@@ -120,6 +152,45 @@ export default withLayout<Props>(
     ),
   },
 )
+
+function ExceptionRow({ exception }: { exception: MentoringExceptionData }) {
+  const date = new Date(`${exception.date}T12:00:00`)
+  const isEmpty = exception.availabilities.length === 0
+  const isMultiple = exception.availabilities.length > 1
+
+  return (
+    <div className="flex items-start justify-between rounded-lg bg-muted/50 px-4 py-3">
+      <div className="font-medium capitalize">
+        {date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+      </div>
+      <div
+        className={cn(
+          "flex gap-4 text-sm",
+          isMultiple ? "items-start" : "items-center",
+        )}
+      >
+        {isEmpty ? (
+          <span className="text-muted-foreground">Indisponible</span>
+        ) : (
+          exception.availabilities.map((availability) => (
+            <p key={availability.startsAtMinute}>
+              {toTime(availability.startsAtMinute)} –{" "}
+              {toTime(availability.endsAtMinute)}
+            </p>
+          ))
+        )}
+        <ButtonLink
+          aria-label={`Supprimer la disponibilité spécifique du ${exception.date}`}
+          href={MentoringExceptionController.destroy(exception.date)}
+          size="icon"
+          variant="destructive"
+        >
+          <TrashIcon />
+        </ButtonLink>
+      </div>
+    </div>
+  )
+}
 
 function AvailabilityRangeRow({
   day,

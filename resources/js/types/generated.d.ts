@@ -204,6 +204,14 @@ weekday: number;
 startsAtMinute: number;
 endsAtMinute: number;
 };
+export type MentoringExceptionAvailabilityData = {
+startsAtMinute: number;
+endsAtMinute: number;
+};
+export type MentoringExceptionData = {
+date: string;
+availabilities: Array<MentoringExceptionAvailabilityData>;
+};
 export type MonthlyData = {
 month: number;
 year: number;

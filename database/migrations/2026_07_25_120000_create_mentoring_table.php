@@ -19,8 +19,8 @@ return new class extends Migration
         Schema::create('mentoring_exceptions', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->unsignedSmallInteger('starts_at_minute');
-            $table->unsignedSmallInteger('ends_at_minute');
+            $table->unsignedSmallInteger('starts_at_minute')->nullable();
+            $table->unsignedSmallInteger('ends_at_minute')->nullable();
             $table->index('date');
         });
 

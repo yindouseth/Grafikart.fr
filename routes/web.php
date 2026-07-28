@@ -152,6 +152,8 @@ Route::group([
     Route::resource('settings', \App\Http\Cms\SettingsController::class)->only(['index', 'store']);
     Route::get('mentoring/availabilities', [\App\Http\Cms\MentoringAvailabilityController::class, 'index'])->name('mentoring.availabilities.index');
     Route::put('mentoring/availabilities', [\App\Http\Cms\MentoringAvailabilityController::class, 'update'])->name('mentoring.availabilities.update');
+    Route::post('mentoring/availabilities/exceptions', [\App\Http\Cms\MentoringExceptionController::class, 'store'])->name('mentoring.availabilities.exceptions.store');
+    Route::delete('mentoring/availabilities/exceptions/{date}', [\App\Http\Cms\MentoringExceptionController::class, 'destroy'])->name('mentoring.availabilities.exceptions.destroy');
     Route::delete('jobs/{job}', [\App\Http\Cms\JobController::class, 'destroy'])->name('jobs.destroy');
     Route::delete('failed-jobs/{job}', [\App\Http\Cms\JobController::class, 'destroyFailed'])->name('failed-jobs.destroy');
     Route::post('failed-jobs/{job}/retry', [\App\Http\Cms\JobController::class, 'retryFailed'])->name('failed-jobs.retry');
