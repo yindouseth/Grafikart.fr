@@ -16,7 +16,7 @@ class TwitchController extends Controller
         $json = $request->json()->all();
 
         if (isset($json['challenge'])) {
-            return response($json['challenge']);
+            return response($json['challenge'], Response::HTTP_OK, ['Content-Type' => 'text/plain']);
         }
 
         if (! $api->validateSignature($request)) {
