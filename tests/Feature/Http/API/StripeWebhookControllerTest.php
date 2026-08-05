@@ -170,7 +170,7 @@ describe('customer.subscription.created', function () {
         $eventFactory = new \App\Infrastructure\Payment\Stripe\Factory\StripeEventFactory;
         $user = User::factory()->create(['stripe_id' => 'cus_test123']);
         $plan = Plan::factory()->create();
-        $nextPayment = now()->addMonth();
+        $nextPayment = now()->endOfDay()->addMonth();
 
         $event = $eventFactory->subscriptionCreated($user, $plan, $nextPayment);
         $response = sendWebhookEvent($this, $event);

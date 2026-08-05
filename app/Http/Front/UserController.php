@@ -89,6 +89,9 @@ class UserController
         $user->password = Hash::make($data->password);
         $user->save();
 
+        Auth::logoutOtherDevices($data->password);
+        $request->session()->regenerate();
+
         return to_route('users.edit')->with('success', 'Votre mot de passe a bien été mis à jour');
     }
 

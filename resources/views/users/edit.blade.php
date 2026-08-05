@@ -50,10 +50,14 @@
                 </h2>
 
                 <form action="{{ route('users.password') }}" class="contents" method="post">
-                    <x-atoms.card class="grid grid-cols-1 md:grid-cols-2 p-4 gap-4">
-                        <x-molecules.field name="password" type="password" label="Nouveau mot de passe"/>
+                    @csrf
+                    <x-atoms.card class="grid grid-cols-1 md:grid-cols-3 p-4 gap-4">
+                        <x-molecules.field name="current_password" type="password" label="Mot de passe actuel"
+                                           autocomplete="current-password" required/>
+                        <x-molecules.field name="password" type="password" label="Nouveau mot de passe"
+                                           autocomplete="new-password" required/>
                         <x-molecules.field name="password_confirmation" type="password"
-                                           label="Confirmer le mot de passe"/>
+                                           label="Confirmer le mot de passe" autocomplete="new-password" required/>
                     </x-atoms.card>
                     <x-atoms.button class="ml-auto">
                         Modifier mon mot de passe

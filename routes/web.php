@@ -11,7 +11,7 @@ Route::get('/oauth/check/{driver}', [\App\Http\Front\AuthController::class, 'cal
 Route::get('/auth/check/premium', [\App\Http\Front\AuthController::class, 'checkPremium'])->name('auth.check.premium');
 
 // Auth restricted page
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'auth.session', 'verified'])->group(function () {
 
     // User profil
     Route::get('/profil', [\App\Http\Front\UserController::class, 'edit'])->name('users.edit');
@@ -119,7 +119,7 @@ Route::get('/feed.rss', [\App\Http\Front\FeedController::class, 'index'])
 Route::group([
     'prefix' => '/cms',
     'as' => 'cms.',
-    'middleware' => ['auth', 'can:manageSite', \App\Http\Middleware\HandleInertiaRequests::class],
+    'middleware' => ['auth', 'auth.session', 'can:manageSite', \App\Http\Middleware\HandleInertiaRequests::class],
 ], function () {
     Route::get('/', function () {
         return redirect('/cms/dashboard');

@@ -10,6 +10,8 @@ use Spatie\LaravelData\Data;
 class PasswordUpdateData extends Data
 {
     public function __construct(
+        #[Required]
+        public string $current_password,
         #[Confirmed]
         #[Required]
         #[Min(6)]
@@ -17,4 +19,10 @@ class PasswordUpdateData extends Data
         public string $password_confirmation,
     ) {}
 
+    public static function rules(): array
+    {
+        return [
+            'current_password' => ['required', 'string', 'current_password'],
+        ];
+    }
 }
