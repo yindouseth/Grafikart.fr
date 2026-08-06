@@ -25,7 +25,7 @@ class CourseSubscriber
             return;
         }
 
-        if ($item->video_path && $item->wasChanged('video_path')) {
+        if ($item->video_path && ($event instanceof ContentCreatedEvent || $item->wasChanged('video_path'))) {
             ComputeCourseDurationJob::dispatch($item->id);
         }
     }

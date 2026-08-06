@@ -4,9 +4,12 @@ use App\Domains\Cms\Event\ContentCreatedEvent;
 use App\Domains\Cms\Event\ContentDeletedEvent;
 use App\Domains\Cms\Event\ContentUpdatedEvent;
 use App\Domains\Course\Course;
+use App\Domains\Course\Job\ComputeCourseDurationJob;
 use App\Domains\Course\Technology;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {
     $this->user = User::factory()->admin()->create();
@@ -107,6 +110,22 @@ describe('store', function () {
             'title' => 'Test Course Title',
             'premium' => true,
         ]);
+    });
+
+    it('queues duration computation when creating a course with a video', function () {
+        Queue::fake();
+        Http::fake(fn () => Http::response([], 200));
+
+        $this->actingAs($this->user)
+            ->post(route('cms.courses.store'), [
+                ...$this->validData,
+                'videoPath' => 'test-course.mp4',
+            ])
+            ->assertRedirect();
+
+        $course = Course::where('slug', 'test-course-title')->firstOrFail();
+
+        Queue::assertPushed(ComputeCourseDurationJob::class, fn (ComputeCourseDurationJob $job) => $job->courseId === $course->id);
     });
 
     it('validates required fields', function (string $field, mixed $value) {
