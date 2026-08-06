@@ -1,5 +1,6 @@
 <?php
 
+use App\Domains\Mentoring\MentoringBooking;
 use App\Domains\Premium\Models\Plan;
 use App\Domains\Premium\Models\Subscription;
 use App\Domains\Premium\Models\Transaction;
@@ -23,6 +24,44 @@ function sendWebhookEvent(Tests\TestCase $test, array $eventData): \Illuminate\T
 }
 
 describe('payment_intent.succeeded', function () {
+    it('confirms a mentoring booking without triggering the Premium payment flow', function () {
+        $user = User::factory()->create();
+        $booking = MentoringBooking::query()->create([
+            'user_id' => $user->id,
+            'status' => 'pending_payment',
+            'starts_at' => now()->addDays(2),
+            'ends_at' => now()->addDays(2)->addHour(),
+            'payment_expires_at' => now()->addMinutes(30),
+            'subject' => 'Architecture',
+            'meeting_url' => 'https://meet.example.test/booking-payment',
+        ]);
+
+        $this->mock(StripePaymentFactory::class)
+            ->shouldNotReceive('createPaymentFromIntent');
+
+        sendWebhookEvent($this, [
+            'id' => 'evt_mentoring_123',
+            'object' => 'event',
+            'type' => 'payment_intent.succeeded',
+            'data' => ['object' => [
+                'object' => 'payment_intent',
+                'id' => 'pi_mentoring_123',
+                'amount_received' => 6000,
+                'metadata' => [
+                    'purchase_type' => 'mentoring',
+                    'booking_id' => (string) $booking->id,
+                ],
+            ]],
+        ])->assertOk();
+
+        expect($booking->refresh()->status)->toBe('scheduled')
+            ->and($booking->payment_expires_at)->toBeNull();
+        $transaction = $booking->transaction;
+        expect($transaction)->not->toBeNull()
+            ->and($transaction->price)->toBe(6000)
+            ->and($transaction->method_id)->toBe('pi_mentoring_123');
+    });
+
     it('creates a transaction and extends user premium', function () {
         $user = User::factory()->create(['stripe_id' => 'cus_test123']);
         $plan = Plan::factory()->create(['price' => 5, 'duration' => 1]);

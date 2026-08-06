@@ -29,4 +29,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('stripe.checkout');
     Route::post('/premium/paypal/{orderId}', [\App\Http\API\PremiumController::class, 'paypal']);
     Route::get('/mentoring/availabilities', [\App\Http\API\MentoringController::class, 'availabilities']);
+    Route::post('/mentoring/bookings', [\App\Http\API\MentoringController::class, 'store']);
 });

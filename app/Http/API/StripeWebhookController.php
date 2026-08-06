@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\API;
 
+use App\Domains\Mentoring\MentoringBooking;
 use App\Domains\Premium\Models\Plan;
 use App\Domains\Premium\Models\Subscription;
 use App\Domains\Premium\Models\Transaction;
@@ -15,6 +16,7 @@ use App\Infrastructure\Payment\Stripe\StripePaymentFactory;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Stripe\Charge;
 use Stripe\Event;
 use Stripe\PaymentIntent;
@@ -74,9 +76,55 @@ readonly class StripeWebhookController
      */
     private function onPaymentIntentSucceeded(PaymentIntent $intent): void
     {
+        if (($intent->metadata['purchase_type'] ?? null) === 'mentoring') {
+            $this->confirmMentoringBooking($intent);
+
+            return;
+        }
+
         $user = $this->getUserFromCustomer((string) $intent->customer);
         $payment = $this->paymentFactory->createPaymentFromIntent($intent);
         event(new PaymentEvent($payment, $user));
+    }
+
+    /** The signed Stripe event is the sole authority that confirms a booking. */
+    private function confirmMentoringBooking(PaymentIntent $intent): void
+    {
+        $bookingId = $intent->metadata['booking_id'] ?? null;
+        if (! is_string($bookingId) || ! ctype_digit($bookingId)) {
+            throw new \UnexpectedValueException('Identifiant de réservation de mentorat manquant.');
+        }
+
+        DB::transaction(function () use ($bookingId, $intent): void {
+            $booking = MentoringBooking::query()->lockForUpdate()->find($bookingId);
+            if ($booking === null) {
+                return;
+            }
+            if (! $booking->isPendingPayment() && $booking->status !== 'scheduled') {
+                return;
+            }
+            if ($booking->isPendingPayment() && $booking->payment_expires_at->isPast()) {
+                $booking->delete();
+
+                return;
+            }
+
+            $booking->transaction()->firstOrCreate(
+                ['method_id' => $intent->id],
+                [
+                    'user_id' => $booking->user_id,
+                    'price' => $intent->amount_received,
+                    'tax' => 0,
+                    'duration' => 0,
+                    'method' => 'stripe',
+                    'fee' => 0,
+                ],
+            );
+
+            if ($booking->isPendingPayment()) {
+                $booking->update(['status' => 'scheduled', 'payment_expires_at' => null]);
+            }
+        });
     }
 
     private function onRefund(Charge $charge): void

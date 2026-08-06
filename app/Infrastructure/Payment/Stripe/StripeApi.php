@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Payment\Stripe;
 
+use App\Domains\Mentoring\MentoringBooking;
 use App\Domains\Premium\Models\Plan;
 use App\Models\User;
 use Stripe\BalanceTransaction;
@@ -141,6 +142,43 @@ class StripeApi
                 ],
             ],
         ]);
+    }
+
+    public function createMentoringSession(User $user, MentoringBooking $booking, string $url): Session
+    {
+        return $this->stripe->checkout->sessions->create([
+            'cancel_url' => $url,
+            'success_url' => $url.'?mentoring=success',
+            'expires_at' => $booking->payment_expires_at->getTimestamp(),
+            'mode' => 'payment',
+            'payment_method_types' => ['card'],
+            'customer' => $user->stripe_id,
+            'metadata' => [
+                'purchase_type' => 'mentoring',
+                'booking_id' => (string) $booking->id,
+            ],
+            'payment_intent_data' => [
+                'metadata' => [
+                    'purchase_type' => 'mentoring',
+                    'booking_id' => (string) $booking->id,
+                ],
+            ],
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'eur',
+                    'product_data' => ['name' => 'Session de mentorat (1 heure)'],
+                    'unit_amount' => 6000,
+                    'tax_behavior' => 'inclusive',
+                ],
+                'quantity' => 1,
+                'dynamic_tax_rates' => $this->taxes,
+            ]],
+        ]);
+    }
+
+    public function expireCheckoutSession(string $sessionId): void
+    {
+        $this->stripe->checkout->sessions->expire($sessionId);
     }
 
     /**

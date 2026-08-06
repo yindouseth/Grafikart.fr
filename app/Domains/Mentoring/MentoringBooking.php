@@ -18,6 +18,7 @@ class MentoringBooking extends Model
         'starts_at',
         'ends_at',
         'payment_expires_at',
+        'stripe_checkout_session_id',
         'subject',
         'description',
         'reschedule_count',
@@ -32,6 +33,11 @@ class MentoringBooking extends Model
             'payment_expires_at' => 'immutable_datetime',
             'reschedule_count' => 'integer',
         ];
+    }
+
+    public function isPendingPayment(): bool
+    {
+        return $this->status === 'pending_payment';
     }
 
     /**

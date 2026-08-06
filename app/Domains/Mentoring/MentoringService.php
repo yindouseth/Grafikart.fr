@@ -5,12 +5,16 @@ namespace App\Domains\Mentoring;
 use App\Domains\Mentoring\Data\MentoringAvailabilityData;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class MentoringService
 {
     private const TIMEZONE = 'Europe/Paris';
 
-    private const SESSION_DURATION_MINUTES = 60;
+    public const SESSION_DURATION_MINUTES = 60;
+
+    public const PAYMENT_TIMEOUT_MINUTES = 30;
 
     private const BUFFER_DURATION_MINUTES = 15;
 
@@ -71,6 +75,61 @@ class MentoringService
         }
 
         return $availabilities;
+    }
+
+    /**
+     * Temporarily holds a slot. The overlap query is executed under a database
+     * lock so two concurrent Checkout requests cannot reserve the same slot.
+     */
+    public function reserve(int $userId, CarbonImmutable $startsAt, string $subject, ?string $description): MentoringBooking
+    {
+        if (! $this->isAvailable($startsAt)) {
+            throw ValidationException::withMessages(['slot' => 'Ce créneau n’est plus disponible.']);
+        }
+
+        return DB::transaction(function () use ($userId, $startsAt, $subject, $description) {
+            $endsAt = $startsAt->addMinutes(self::SESSION_DURATION_MINUTES);
+            $hasConflict = MentoringBooking::query()
+                ->where(function ($query) {
+                    $query->where('status', 'scheduled')
+                        ->orWhere(function ($query) {
+                            $query->where('status', 'pending_payment')
+                                ->where('payment_expires_at', '>', now());
+                        });
+                })
+                ->where('starts_at', '<', $endsAt)
+                ->where('ends_at', '>', $startsAt->subMinutes(self::BUFFER_DURATION_MINUTES))
+                ->lockForUpdate()
+                ->exists();
+
+            if ($hasConflict) {
+                throw ValidationException::withMessages(['slot' => 'Ce créneau vient d’être réservé.']);
+            }
+
+            return MentoringBooking::query()->create([
+                'user_id' => $userId,
+                'status' => 'pending_payment',
+                'starts_at' => $startsAt,
+                'ends_at' => $endsAt,
+                'payment_expires_at' => now()->addMinutes(self::PAYMENT_TIMEOUT_MINUTES),
+                'subject' => $subject,
+                'description' => $description,
+                'meeting_url' => 'https://meet.grafikart.fr/mentoring/'.str()->uuid(),
+            ]);
+        });
+    }
+
+    private function isAvailable(CarbonImmutable $startsAt): bool
+    {
+        foreach ($this->findAvailabilities() as $availability) {
+            foreach ($availability->startTimes as $availableStartAt) {
+                if ($availableStartAt->equalTo($startsAt)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

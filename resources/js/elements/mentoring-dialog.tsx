@@ -7,7 +7,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog.tsx"
-import { queryClient, useApiFetch } from "@/hooks/use-api-fetch.ts"
+import { apiFetch, queryClient, useApiFetch } from "@/hooks/use-api-fetch.ts"
 import { QueryClientProvider } from "@tanstack/react-query"
 import type { MentoringAvailabilityData } from "@/types"
 import { Calendar } from "@/components/ui/calendar.tsx"
@@ -91,6 +91,9 @@ export function MentoringDialog() {
  * Form to select a subject
  */
 function SubjectForm({ date }: { date: string }) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string>()
+
   return (
     <div>
       <div className="border-b px-5 py-5 sm:px-8">
@@ -105,7 +108,32 @@ function SubjectForm({ date }: { date: string }) {
           évoquer pendant la session
         </DialogDescription>
       </div>
-      <form className="p-8 text-muted-foreground grid gap-4">
+      <form
+        className="p-8 text-muted-foreground grid gap-4"
+        onSubmit={async (event) => {
+          event.preventDefault()
+          setIsSubmitting(true)
+          setError(undefined)
+          const form = new FormData(event.currentTarget)
+          try {
+            const response = await apiFetch<{ url: string }>(
+              "/api/mentoring/bookings",
+              {
+                method: "POST",
+                body: JSON.stringify(Object.fromEntries(form)),
+              },
+            )
+            window.location.assign(response.url)
+          } catch (error) {
+            setError(
+              error instanceof Error
+                ? error.message
+                : "Impossible de démarrer le paiement.",
+            )
+            setIsSubmitting(false)
+          }
+        }}
+      >
         <input type="hidden" value={date} name="slot" />
         <FormField
           label="Sujet"
@@ -118,10 +146,11 @@ function SubjectForm({ date }: { date: string }) {
           placeholder=""
           type="textarea"
         />
+        {error && <p className="text-sm text-destructive">{error}</p>}
         <Field orientation="horizontal" className="justify-end">
-          <Button size="lg">
+          <Button size="lg" disabled={isSubmitting}>
             <CalendarIcon />
-            Réserver
+            {isSubmitting ? "Redirection…" : "Réserver"}
           </Button>
         </Field>
       </form>
