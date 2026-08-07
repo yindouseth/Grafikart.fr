@@ -71,6 +71,10 @@
   --breakpoint-3xl: 105rem;
 }
 
+.has-promo {
+  --header-height: 90px;
+}
+
 @layer base {
   html {
     scrollbar-gutter: stable;

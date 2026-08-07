@@ -7,10 +7,14 @@
         ['label' => 'Premium', 'href' => '/premium', 'icon' => 'star', 'highlight' => true, 'hidden' => $user?->isPremium()],
         ['label' => 'Blog', 'href' => '/blog', 'icon' => 'notebook-pen'],
     ], fn (array $item) => !($item['hidden'] ?? false));
+    $hasPromo = !request()->hasCookie('promo-freelance-dismissed');
 @endphp
 
-<site-header class="[body:not(.has-drawer)_&]:container block text-foreground-title fixed top-0 left-0 right-0 z-50 transition-all [&+*]:pt-28">
-    <div class="flex items-center gap-2 border-b py-3 font-semibold in-[.has-drawer]:px-4">
+<site-header class=" block text-foreground-title fixed top-0 left-0 right-0 z-50 transition-all [&+*]:pt-28 [.has-promo_&+*]:pt-37">
+    @if ($hasPromo)
+        <promo-freelance class="min-h-9"></promo-freelance>
+    @endif
+    <div class="[body:not(.has-drawer)_&]:container flex items-center gap-2 border-b py-3 font-semibold in-[.has-drawer]:px-4">
         @if($drawer === 'left')
             <div class="contents 3xl:hidden">
                 <drawer-toggle class="p-2 -ml-2 cursor-pointer block hover:text-primary">

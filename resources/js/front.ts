@@ -19,6 +19,7 @@ import { DrawerToggle } from "@/elements/drawer-toggle.ts"
 import { HasCompletedElement } from "@/elements/has-completed.ts"
 import "../../node_modules/@hotwired/turbo/src/index.js"
 import { ScrollTop } from "@/elements/scroll-top.ts"
+import { PromoFreelance } from "@/elements/promo-freelance.tsx"
 
 r2wc("path-detail", () => import("@/elements/path-detail.tsx"), {
   path: "json",
@@ -41,6 +42,7 @@ r2wc("course-filters", CourseFilters, {})
 r2wc("site-search", SiteSearch, {})
 r2wc("theme-switcher", ThemeSwitcher, {})
 r2wc("burger-menu", BurgerMenu, {}, { append: true })
+r2wc("promo-freelance", PromoFreelance, {})
 
 lazywc("code-block", () => import("@/elements/code-block.ts"))
 lazywc("md-editor", () => import("@/elements/md-editor.ts"))

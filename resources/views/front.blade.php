@@ -20,7 +20,7 @@
     <title>@yield('title') | {{ config('app.name', 'Laravel') }}</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=crimson-pro:700|inter:400,600,700" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=crimson-pro:700|inter:400,500,600,700" rel="stylesheet" />
     <link rel="search" type="application/opensearchdescription+xml" title="Grafikart" href="/opensearch.xml">
 
     @viteReactRefresh
@@ -45,6 +45,7 @@
         ($drawer ?? null) === 'left' ? 'has-drawer lg:ml-(--drawer-width) drawer-hidden:ml-0!' : '',
         ($drawer ?? null) === 'right' ? 'has-drawer lg:mr-(--drawer-width) drawer-hidden:mr-0!' : '',
         $user?->isPremium() ? 'user-premium' : '',
+        request()->hasCookie('promo-freelance-dismissed') ? '' : 'has-promo'
     ])
     @if($user?->isPremium()) data-premium @endif @if($user) data-user="{{ $user->id }}" @endif
     @if($style ?? null) style="{{ $style }}" @endif
