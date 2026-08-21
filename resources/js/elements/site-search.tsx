@@ -74,7 +74,7 @@ function SearchInputInner() {
               placeholder="Rechercher un contenu"
               className="rounded-md pl-10 peer"
               name="q"
-              render={<Input value={search} />}
+              render={<Input />}
             />
             {isFetching ? (
               <Spinner className={iconCls} />
