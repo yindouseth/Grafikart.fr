@@ -149,7 +149,7 @@ return [
         Features::emailVerification(),
         Features::twoFactorAuthentication([
             'confirm' => true,
-            'confirmPassword' => false,
+            'confirmPassword' => true,
             // 'window' => 0
         ]),
     ],

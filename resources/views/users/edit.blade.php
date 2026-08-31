@@ -187,7 +187,7 @@
             </section>
         </aside>
     </div>
-    <x-molecules.dialog id="delete-confirm" class="max-w-87" title="Confirmer la suppression">
+    <x-molecules.dialog id="delete-confirm" class="max-w-150!" title="Confirmer la suppression">
         <form action="{{ route('users.delete') }}" class="space-y-4" method="post">
             @method('DELETE')
             <p>
