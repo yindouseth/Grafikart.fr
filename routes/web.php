@@ -112,7 +112,7 @@ Route::group(['prefix' => '/blog', 'as' => 'blog.'], function () {
 
 // RSS Feed
 Route::get('/feed.rss', [\App\Http\Front\FeedController::class, 'index'])
-    ->name('feed.rss')
+    ->name('rss')
     ->middleware(\Spatie\ResponseCache\Middlewares\CacheResponse::for(\Illuminate\Support\minutes(15)));
 
 // Admin routes
