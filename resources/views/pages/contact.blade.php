@@ -17,7 +17,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-10">
                 <div>
                     <x-atoms.alert type="info" size="sm" class="mb-6">
-                        Si vous avez des problèmes dans votre code n'utilisez utilisez
+                        Si vous avez des problèmes dans votre code, utilisez
                         plutôt le système de support présent sous la vidéo.
                     </x-atoms.alert>
                     <form class="grid grid-cols-2 gap-4" method="post" action="{{ route('contact') }}">
